@@ -1,5 +1,7 @@
 # python csv2coco.py --train=Sony_RX100m7_annotation_jpg_train.csv --test=Sony_RX100m7_annotation_jpg_test.csv --val=Sony_RX100m7_annotation_jpg_val.csv --camera=Sony_RX100m7 --directory=../
 # python csv2coco.py --train=Sony_RX100m7_annotation_jpg_train.csv --test=Sony_RX100m7_annotation_jpg_test.csv --val=Sony_RX100m7_annotation_jpg_val.csv --camera=Sony_RX100m7 --directory=../
+# python csv2coco.py --train=new_Nikon750_annotation_jpg_train.csv --test=new_Nikon750_annotation_jpg_test.csv --val=new_Nikon750_annotation_jpg_val.csv --camera=Nikon750 --directory=/home/igor/Desktop/TWCC/Dataset/our_shot_data/ --ignore_split_dir
+# python csv2coco.py --train=new_Sony_RX100m7_annotation_jpg_train.csv --test=new_Sony_RX100m7_annotation_jpg_test.csv --val=new_Sony_RX100m7_annotation_jpg_val.csv --camera=Sony_RX100m7 --directory=/home/igor/Desktop/TWCC/Dataset/our_shot_data/ --ignore_split_dir
 import argparse
 import os
 import os.path as op
@@ -70,8 +72,7 @@ if __name__ == "__main__":
     parser.add_argument('--val', type=str)
     parser.add_argument('--camera', type=str)
     parser.add_argument('--directory', type=str, help="Directory to move files to, must exist")
-    parser.add_argument('--lowlight_data', type=str, help="Directory to move files to, must exist")
-    parser.add_argument('--lowlight_flag', action="store_true")
+    parser.add_argument('--ignore_split_dir', action="store_true")
     args = parser.parse_args()
 
     assert len(set([args.train, args.test, args.val])) == 3
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     for file_set, set_name, content in zip([train_set, test_set, val_set], ['train', 'test', 'val'], contents):
         images_list = []
         annotations_list = []
-        path_prefix = op.join(args.directory, "{}_{}".format(args.camera, set_name))
+        path_prefix = op.join(args.directory, "{}_{}".format(args.camera, set_name) if not args.ignore_split_dir else args.camera)
         if not op.exists(path_prefix):
             os.mkdir(path_prefix)
         assert op.exists(path_prefix)
@@ -124,8 +125,8 @@ if __name__ == "__main__":
             image_id = tmp_file_name_to_id[file_name]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             width, height = x2-x1, y2-y1
-            assert width>0
-            assert height>0
+            if not width>=0: raise Exception("Width smaller than zero in {}".format(line))
+            if not height>=0: raise Exception("Height smaller than zero in {}".format(line))
             area=int(width*height)
             assert len(cat_name.splitlines()) == 1
             cat_name = cat_name.splitlines()[0]
