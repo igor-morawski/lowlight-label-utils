@@ -1,5 +1,5 @@
 # SONY: 
-# python -i coco2subset.py --anno=/home/igor/Desktop/temp/instances_train2017.json --classes=person,bicycle,car --train=10069,3287,1626 --val=1283,403,210 --test=1232,398,197 --debug 
+# python -i coco2subset.py --anno=/home/igor/Desktop/temp/instances_train2017.json --classes=person,bicycle,car --train=10069,3287,1626 --val=1283,403,210 --test=1232,398,197 --train_imgs=2570 --val_imgs=320 --test_imgs=320 --seeds=100
 import argparse
 import os
 import os.path as op
